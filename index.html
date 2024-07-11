@@ -1,0 +1,38 @@
+<!-- index.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Car Rental Website</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header>
+    <h1>Car Rental Website</h1>
+  </header>
+  <main>
+    <section id="vehicle-list">
+      <h2>Vehicles</h2>
+      <ul id="vehicle-list-items"></ul>
+    </section>
+    <section id="booking-form">
+      <h2>Book a Vehicle</h2>
+      <form id="booking-form">
+        <label for="vehicle-id">Select a Vehicle:</label>
+        <select id="vehicle-id" name="vehicleId"></select>
+        <label for="start-date">Start Date:</label>
+        <input type="date" id="start-date" name="startDate">
+        <label for="end-date">End Date:</label>
+        <input type="date" id="end-date" name="endDate">
+        <label for="customer-name">Customer Name:</label>
+        <input type="text" id="customer-name" name="customerName">
+        <label for="customer-email">Customer Email:</label>
+        <input type="email" id="customer-email" name="customerEmail">
+        <button type="submit">Book Vehicle</button>
+      </form>
+    </section>
+  </main>
+  <script src="script.js"></script>
+</body>
+</html>
