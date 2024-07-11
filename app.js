@@ -1,66 +1,37 @@
-// app.js
-const express = require('express');
-const mongoose = require('mongoose');
-const bodyParser = require('body-parser');
+const { google } = require('googleapis');
 
-const app = express();
-
-// Connect to MongoDB
-mongoose.connect('mongodb://localhost/car-rental-db', { useNewUrlParser: true, useUnifiedTopology: true });
-
-// Define the Vehicle model
-const vehicleSchema = new mongoose.Schema({
-  make: String,
-  model: String,
-  year: Number,
-  transmission: String,
-  fuelType: String,
-  dailyRentalRate: Number
+const auth = new google.auth.GoogleAuth({
+  // ключ API
+  client_id: 'YOUR_CLIENT_ID',
+  client_secret: 'YOUR_CLIENT_SECRET',
+  redirect_uri: 'YOUR_REDIRECT_URI'
 });
 
-const Vehicle = mongoose.model('Vehicle', vehicleSchema);
+const sheets = google.sheets('v4');
 
-// Define the Booking model
-const bookingSchema = new mongoose.Schema({
-  vehicle: { type: mongoose.Schema.Types.ObjectId, ref: 'Vehicle' },
-  startDate: Date,
-  endDate: Date,
-  customerName: String,
-  customerEmail: String
-});
+const vehicles = [
+  ['Toyota Corolla', 2015],
+  ['Ford Mustang', 2018],
+  ['Honda Civic', 2020],
+  ['Nissan GT-R', 2019],
+  ['Volkswagen Golf', 2017]
+];
 
-const Booking = mongoose.model('Booking', bookingSchema);
+async function writeToSheet() {
+  const spreadsheetId = 'YOUR_SPREADSHEET_ID';
+  const range = 'Sheet1!A1:B6'; // діапазон ячеєк для запису
 
-// Create API routes
-app.use(bodyParser.json());
-
-app.get('/api/vehicles', async (req, res) => {
-  const vehicles = await Vehicle.find().exec();
-  res.json(vehicles);
-});
-
-app.get('/api/vehicles/:id', async (req, res) => {
-  const vehicle = await Vehicle.findById(req.params.id).exec();
-  res.json(vehicle);
-});
-
-app.post('/api/bookings', async (req, res) => {
-  const { vehicleId, startDate, endDate, customerName, customerEmail } = req.body;
-  const vehicle = await Vehicle.findById(vehicleId).exec();
-  if (!vehicle) {
-    return res.status(404).json({ error: 'Vehicle not found' });
+  try {
+    const response = await sheets.spreadsheets.values.update({
+      spreadsheetId,
+      range,
+      valueInputOption: 'USER_ENTERED',
+      resource: { values: vehicles }
+    });
+    console.log(`Data written to sheet: ${response.data.updatedRange}`);
+  } catch (err) {
+    console.error('Error writing to sheet:', err);
   }
-  const booking = new Booking({
-    vehicle,
-    startDate,
-    endDate,
-    customerName,
-    customerEmail
-  });
-  await booking.save();
-  res.json(booking);
-});
+}
 
-app.listen(3000, () => {
-  console.log('Server started on port 3000');
-});
+writeToSheet();
